@@ -3,7 +3,8 @@
     "outDir": "dist",
     "lib": ["es2019"],
     "types": ["node"],
-    "sourceMap": true
+    "sourceMap": true,
+    "strict": true
   },
   "include": [
     "src/**/*.ts"

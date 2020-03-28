@@ -1,48 +1,100 @@
 import * as zlib from "zlib";
 
-import { RecordFlag } from './ModfileDefs';
-import DataSource from "../source/DataSource";
-import ModfileType from "./ModfileType";
-import ModfileHandler, { ModfileHeader, ParseChildren } from "./ModfileHandler";
+import { RecordFlag } from '../ModfileDefs';
+import { DataSource } from "../../source";
+import { defineTypeTags } from "../../utils";
+
+/**
+ * Handle group based modfile entry.
+ */
+export interface GroupHandler {
+
+  /**
+   * @param type Group type.
+   * @param size Children data size.
+   * @param label Group label.
+   * @param parse Parse children function.
+   */
+  (type: number, size: number, label: number, parse: ParseChildren): void;
+  
+}
+
+/**
+ * Handle record modfile entry.
+ */
+export interface RecordHandler {
+
+  /**
+   * @param type Record type.
+   * @param size Data size (potentially after compression).
+   * @param flags Record flags.
+   * @param formId Form identifier.
+   * @param parse Parse children function.
+   */
+  (type: number, size: number, flags: number, formId: number, parse: ParseFields): void;
+
+}
+
+/**
+ * Group children handler.
+ */
+export interface ChildHandler {
+
+  /**
+   * Handle group child entry.
+   */
+  handleGroup: GroupHandler;
+
+  /**
+   * Handle record child entry.
+   */
+  handleRecord: RecordHandler;
+
+}
+
+/**
+ * Handle field based modfile entry.
+ */
+export interface FieldHandler {
+
+  /**
+   * @param type Field type.
+   * @param size Data size.
+   * @param buffer Data buffer.
+   * @param offset Data offset within the buffer.
+   */
+  (type: number, size: number, buffer: Buffer, offset: number): void;
+
+}
+
+/**
+ * Parse record fields.
+ */
+export interface ParseFields {
+
+  /**
+   * @param handler Field handler.
+   */
+  (handler: FieldHandler): void;
+
+}
+
+/**
+ * Parse group children.
+ */
+export interface ParseChildren {
+
+  /**
+   * @param handler Group child handler.
+   */
+  (handler: ChildHandler): void;
+
+}
 
 /**
  * Basic types used by the parser.
  */
-const {
-  TES4, CNAM, SNAM, MAST, GRUP, OFST, XXXX
-} = ModfileType.build(
-  "TES4", "GRUP", "CNAM", "SNAM", "MAST", "OFST", "XXXX"
-);
-
-/**
- * TES4 record mapper.
- */
-class HeaderMapper extends ModfileHandler {
-
-  header: ModfileHeader = {
-    author: null,
-    description: null,
-    parents: []
-  };
-
-  handleRecord(type: number, _size, _flags, _formId, parse: ParseChildren) {
-    if (type !== TES4) {
-      throw new Error(`Invalid header type ${type}.`);
-    }
-    parse(this);
-  }
-
-  handleField(type: number, size: number, buffer: Buffer, offset: number) {
-    if (type === CNAM) {
-      this.header.author = buffer.toString("ascii", offset, offset + size - 1);
-    } else if (type === SNAM) {
-      this.header.description = buffer.toString("ascii", offset, offset + size - 1);
-    } else if (type === MAST) {
-      this.header.parents.push(buffer.toString("ascii", offset, offset + size - 1));
-    }
-  }
-
-}
+const { GRUP, OFST, XXXX } = defineTypeTags("GRUP", "OFST", "XXXX");
 
 /**
  * Simple parser for Bethesda's ESM/ESP modfiles.
@@ -51,15 +103,13 @@ class HeaderMapper extends ModfileHandler {
 export default class ModfileParser {
 
   constructor(private source: DataSource) {
-    Object.freeze(this);
   }
 
   /**
    * Start modfile parsing with the given handler.
    * @param handler Top-level modfile handler.
    */
-  parse(handler: ModfileHandler) {
-    this.parseHeader(handler);
+  parse(handler: ChildHandler) {
     while (this.parseNext(handler)) { /* no-op */ }
   }
 
@@ -69,7 +119,7 @@ export default class ModfileParser {
    * @param assert Whether to signal error when there is no content.
    * @returns Number of processed bytes or zero for EOF.
    */
-  private parseNext(handler, assert = false): number {
+  private parseNext(handler: ChildHandler, assert = false): number {
     const buffer = this.source.read(24);
     const type = buffer.length === 24 ? buffer.readUInt32LE(0) : null;
     if (assert && !type) {
@@ -83,26 +133,16 @@ export default class ModfileParser {
   }
 
   /**
-   * Parse modfile header field.
-   * @param handler Modfile handler.
-   */
-  private parseHeader(handler: ModfileHandler): void {
-    const mapper = new HeaderMapper();
-    this.parseNext(mapper, true);
-    handler.handleHeader(mapper.header);
-  }
-
-  /**
    * Parse group based entry and return its size (including header).
    * @param buffer Buffer with group header.
    * @param handler Modfile handler to use.
    */
-  private parseGroup(buffer: Buffer, handler: ModfileHandler): number {
+  private parseGroup(buffer: Buffer, handler: ChildHandler): number {
     const size = buffer.readUInt32LE(4);
     const label = buffer.readUInt32LE(8);
     const type = buffer.readInt32LE(12);
     let skip = size - 24;
-    handler.handleGroup(type, label, (handler) => {
+    handler.handleGroup(type, skip, label, (handler: ChildHandler) => {
       while (skip > 0) {
         skip -= this.parseNext(handler, true);
       }
@@ -118,12 +158,12 @@ export default class ModfileParser {
    * @param handler Modfile handler to use.
    * @returns Number of processed bytes.
    */
-  private parseRecord(type: number, buffer: Buffer, handler: ModfileHandler): number {
+  private parseRecord(type: number, buffer: Buffer, handler: ChildHandler): number {
     const size = buffer.readUInt32LE(4);
     const flags = buffer.readUInt32LE(8);
     const formId = buffer.readUInt32LE(12);
     let skip = size;
-    handler.handleRecord(type, size, flags, formId, (handler) => {
+    handler.handleRecord(type, size, flags, formId, (handler: FieldHandler) => {
       let buffer = this.source.read(size);
       if (flags & RecordFlag.ZLIB_COMPRESSED) {
         buffer = zlib.inflateSync(buffer.subarray(4));
@@ -141,7 +181,7 @@ export default class ModfileParser {
    * @param handler Modfile handler to use.
    * @returns Number of processed bytes.
    */
-  private parseFields(buffer: Buffer, handler: ModfileHandler): number {
+  private parseFields(buffer: Buffer, handler: FieldHandler): number {
     let offset = 0;
     while (offset < buffer.length) {
       offset += this.parseField(buffer, offset, buffer.readUInt16LE(offset + 4), handler);
@@ -156,14 +196,14 @@ export default class ModfileParser {
    * @param size Size of field data.
    * @param handler Modfile handler to use.
    */
-  private parseField(buffer: Buffer, offset: number, size: number, handler: ModfileHandler): number {
+  private parseField(buffer: Buffer, offset: number, size: number, handler: FieldHandler): number {
     const type = buffer.readUInt32LE(offset);
     if (type === OFST) {
       return buffer.length - offset;
     } else if (type === XXXX) {
       return size + 6 + this.parseField(buffer, offset + 16, buffer.readUInt32LE(offset + 6), handler);
     }
-    handler.handleField(type, size, buffer, offset + 6);
+    handler(type, size, buffer, offset + 6);
     return size + 6;
   }
 

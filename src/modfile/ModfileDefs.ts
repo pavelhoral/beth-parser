@@ -1,4 +1,10 @@
 /**
+ * Various modfile constants and structures as defined in https://en.uesp.net/wiki/Tes5Mod:Mod_File_Format.
+ * Only for constants that are universally important or of use byt the parser library.
+ * @packageDocumentation
+ */
+
+/**
  * Well known GRUP record types.
  */
 export enum GroupType {

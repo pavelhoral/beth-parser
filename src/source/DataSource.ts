@@ -11,11 +11,16 @@ export default interface DataSource {
   /**
    * Skip the defined number of bytes.
    */
-  skip(length: number);
+  skip(length: number): void;
 
   /**
    * Close the underlying data source.
    */
-  close();
+  close(): void;
+
+  /**
+   * Get reader's actual cursor position.
+   */
+  cursor(): number;
 
 }

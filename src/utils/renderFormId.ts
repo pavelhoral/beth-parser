@@ -1,5 +1,6 @@
 /**
- * Render FORM ID as string.
+ * Render form identifier as fixed width hex string.
+ * @param formId Form identifier.
  */
 export default function renderFormId(formId: number): string {
   const hexId = (formId | 0).toString(16).toUpperCase();

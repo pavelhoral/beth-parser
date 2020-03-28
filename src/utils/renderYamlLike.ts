@@ -8,7 +8,7 @@ enum RenderContext {
 /**
  * Render array-like structure.
  */
-function renderArray(subject: any[], prefix: string, indent: string, context: RenderContext) {
+function renderArray(subject: any[], prefix: string, indent: string, context: RenderContext): string {
   // Ignore empty array
   if (!subject.length) {
     return "";
@@ -22,7 +22,7 @@ function renderArray(subject: any[], prefix: string, indent: string, context: Re
 /**
  * Render object-like structure.
  */
-function renderObject(subject: any, prefix: string, indent: string, context: RenderContext) {
+function renderObject(subject: any, prefix: string, indent: string, context: RenderContext): string {
   // Remove NULL values
   const props = Object.entries(subject).filter(prop => prop[1] !== null);
   // Render every property on it's own line
@@ -34,7 +34,7 @@ function renderObject(subject: any, prefix: string, indent: string, context: Ren
 /**
  * Render generic value.
  */
-function renderValue(subject: any, prefix: string, indent: string, context = RenderContext.NONE) {
+function renderValue(subject: any, prefix: string, indent: string, context = RenderContext.NONE): string {
   if (Buffer.isBuffer(subject)) {
     return prefix + "[" + subject.toString("hex") + "]";
   } else if (Array.isArray(subject)) {
@@ -47,7 +47,7 @@ function renderValue(subject: any, prefix: string, indent: string, context = Ren
 }
 
 /**
- * Render value in a YAML-like structure. 
+ * Render value in a YAML-like structure.
  */
 export default function renderYamlLike(subject: any): string {
   return renderValue(subject, "", "");

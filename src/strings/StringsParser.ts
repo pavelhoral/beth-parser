@@ -1,4 +1,14 @@
-import StringsHandler from "./StringsHandler";
+/**
+ * Strings parsing handler.
+ */
+export interface StringsHandler {
+
+  /**
+   * Handle single string record.
+   */
+  (id: number, text: string): void;
+
+}
 
 /**
  * Strings data parser.

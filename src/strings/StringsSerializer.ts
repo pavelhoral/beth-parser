@@ -9,19 +9,19 @@ export default class StringsSerializer {
    * @param encoding String encoding.
    */
   constructor(
-    protected padded = false,
-    protected encoding = "utf-8") {
+      protected padded = false,
+      protected encoding = "utf-8") {
   }
 
   /**
    * Serialize strings into data buffer.
    */
   serialize(strings: { [id: number]: string }) {
-    const stringIds = Object.keys(strings);
+    const stringIds = Object.keys(strings).map(Number);
     const directorySize = stringIds.length * 8;
     let dataSize: number = 0;
     // Convert all strings into buffers
-    const stringMap = stringIds.reduce((result, stringId) => {
+    const stringMap = stringIds.reduce((result: any, stringId: number) => {
       const string: string = strings[stringId];
       if (!result[string]) {
         result[string] = Buffer.from(string, this.encoding as BufferEncoding);

@@ -13,7 +13,7 @@ export default class FileSource implements DataSource {
   /**
    * File descriptor.
    */
-  private fileDesc: any;
+  private fileDesc: number;
 
   /**
    * Current read position.
@@ -42,10 +42,6 @@ export default class FileSource implements DataSource {
   constructor(path: string, bufferSize = 0x3fff) {
     this.fileDesc = fs.openSync(path, "r");
     this.sourceBuffer = Buffer.alloc(bufferSize || 0x3fff);
-  }
-
-  close() {
-    fs.closeSync(this.fileDesc);
   }
 
   /**
@@ -93,6 +89,14 @@ export default class FileSource implements DataSource {
       this.bufferOffset = 0;
       this.bufferLength = 0;
     }
+  }
+
+  close() {
+    fs.closeSync(this.fileDesc);
+  }
+
+  cursor() {
+    return this.filePosition - this.bufferLength + this.bufferOffset;
   }
 
 }
