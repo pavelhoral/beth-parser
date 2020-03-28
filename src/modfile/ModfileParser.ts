@@ -1,3 +1,5 @@
+import * as zlib from "zlib";
+
 import { RecordFlag } from './ModfileDefs';
 import DataSource from "../source/DataSource";
 import ModfileType from "./ModfileType";
