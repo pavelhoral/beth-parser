@@ -17,7 +17,7 @@ export default class StringsWriter {
    * @param padded Whether to use size padding.
    */
   writeBuffer(strings: { [id: number]: string }, padded = false) {
-    var stringsSerializer = new StringsSerializer(padded, this.encoding);
+    const stringsSerializer = new StringsSerializer(padded, this.encoding);
     return stringsSerializer.serialize(strings);
   }
 
@@ -27,7 +27,7 @@ export default class StringsWriter {
    * @param filename Target file.
    */
   writeFile(strings: { [id: number]: string }, filename: string) {
-    var outputBuffer = this.writeBuffer(strings, path.extname(filename) !== ".STRINGS");
+    const outputBuffer = this.writeBuffer(strings, path.extname(filename) !== ".STRINGS");
     fs.writeFileSync(filename, outputBuffer);
   }
 

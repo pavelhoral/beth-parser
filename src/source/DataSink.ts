@@ -8,7 +8,7 @@ export default interface DataSink {
    * @param buffer Data buffer.
    */
   write(buffer: Buffer): void;
-  
+
   /**
    * Close and free output resources.
    */

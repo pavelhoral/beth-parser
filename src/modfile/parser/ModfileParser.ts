@@ -1,39 +1,28 @@
 import * as zlib from "zlib";
 
-import { RecordFlag } from '../ModfileDefs';
+import { RecordFlag } from "../ModfileDefs";
 import { DataSource } from "../../source";
 import { defineTypeTags } from "../../utils";
+import { type } from "os";
 
 /**
  * Handle group based modfile entry.
+ * @param type Group type.
+ * @param size Children data size.
+ * @param label Group label.
+ * @param parse Parse children function.
  */
-export interface GroupHandler {
-
-  /**
-   * @param type Group type.
-   * @param size Children data size.
-   * @param label Group label.
-   * @param parse Parse children function.
-   */
-  (type: number, size: number, label: number, parse: ParseChildren): void;
-  
-}
+export type GroupHandler = (type: number, size: number, label: number, parse: ParseChildren) => void;
 
 /**
  * Handle record modfile entry.
+ * @param type Record type.
+ * @param size Data size (potentially after compression).
+ * @param flags Record flags.
+ * @param formId Form identifier.
+ * @param parse Parse children function.
  */
-export interface RecordHandler {
-
-  /**
-   * @param type Record type.
-   * @param size Data size (potentially after compression).
-   * @param flags Record flags.
-   * @param formId Form identifier.
-   * @param parse Parse children function.
-   */
-  (type: number, size: number, flags: number, formId: number, parse: ParseFields): void;
-
-}
+export type RecordHandler = (type: number, size: number, flags: number, formId: number, parse: ParseFields) => void;
 
 /**
  * Group children handler.
@@ -54,42 +43,24 @@ export interface ChildHandler {
 
 /**
  * Handle field based modfile entry.
+ * @param type Field type.
+ * @param size Data size.
+ * @param buffer Data buffer.
+ * @param offset Data offset within the buffer.
  */
-export interface FieldHandler {
-
-  /**
-   * @param type Field type.
-   * @param size Data size.
-   * @param buffer Data buffer.
-   * @param offset Data offset within the buffer.
-   */
-  (type: number, size: number, buffer: Buffer, offset: number): void;
-
-}
+export type FieldHandler = (type: number, size: number, buffer: Buffer, offset: number) => void;
 
 /**
  * Parse record fields.
+ * @param handler Field handler.
  */
-export interface ParseFields {
-
-  /**
-   * @param handler Field handler.
-   */
-  (handler: FieldHandler): void;
-
-}
+export type ParseFields = (handler: FieldHandler) => void;
 
 /**
  * Parse group children.
+ * @param handler Group child handler.
  */
-export interface ParseChildren {
-
-  /**
-   * @param handler Group child handler.
-   */
-  (handler: ChildHandler): void;
-
-}
+export type ParseChildren = (handler: ChildHandler) => void;
 
 /**
  * Basic types used by the parser.

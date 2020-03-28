@@ -4,7 +4,7 @@ import DataSink from "./DataSink";
  * Buffer based data sink.
  */
 export default class BufferSink implements DataSink {
-  
+
   public buffers: Buffer[] = [];
 
   write(buffer: Buffer): void {

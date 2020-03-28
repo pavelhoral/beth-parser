@@ -27,6 +27,7 @@ export default class BufferSource implements DataSource {
   }
 
   close(): void {
+    // nothing to close
   }
 
   cursor(): number {

@@ -11,7 +11,7 @@ describe("StringsParser", () => {
         "464F4F00" +
         "42415200", "hex");
     const parser = new StringsParser(buffer);
-    const parsed = {};
+    const parsed: { [id: number]: string } = {};
     parser.parse((id, text) => parsed[id] = text);
     expect(parsed).toEqual({ 1: "FOO", 2: "BAR" });
   });

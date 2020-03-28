@@ -17,26 +17,26 @@ export default class StringsSerializer {
    * Serialize strings into data buffer.
    */
   serialize(strings: { [id: number]: string }) {
-    const stringIds = Object.keys(strings).map(Number);
-    const directorySize = stringIds.length * 8;
+    const ids = Object.keys(strings).map(Number);
+    const directorySize = ids.length * 8;
     let dataSize: number = 0;
-    // Convert all strings into buffers
-    const stringMap = stringIds.reduce((result: any, stringId: number) => {
-      const string: string = strings[stringId];
-      if (!result[string]) {
-        result[string] = Buffer.from(string, this.encoding as BufferEncoding);
-        dataSize += +this.padded * 8 + result[string].length + 1;
+    // Create string to buffer dictionary
+    const dictionary = ids.reduce((result: any, stringId: number) => {
+      const text: string = strings[stringId];
+      if (!result[text]) {
+        result[text] = Buffer.from(text, this.encoding as BufferEncoding);
+        dataSize += +this.padded * 8 + result[text].length + 1;
       }
       return result;
     }, {});
     const buffer = Buffer.alloc(8 + directorySize + dataSize);
     // Write header
-    buffer.writeUInt32LE(stringIds.length, 0);
+    buffer.writeUInt32LE(ids.length, 0);
     buffer.writeUInt32LE(dataSize, 4);
     // Serialize data
-    Object.keys(stringMap).reduce((offset, string) => {
-      const encoded = stringMap[string];
-      stringMap[string] = offset;
+    Object.keys(dictionary).reduce((offset, text) => {
+      const encoded = dictionary[text];
+      dictionary[text] = offset;
       if (this.padded) {
         buffer.writeUInt32LE(encoded.length + 1, 8 + directorySize + offset);
         offset += 4;
@@ -45,9 +45,9 @@ export default class StringsSerializer {
       return offset + encoded.length + 1;
     }, 0);
     // Serialize dictionary
-    stringIds.forEach((stringId, index) => {
-      buffer.writeUInt32LE(+stringId, 8 + index * 8);
-      buffer.writeUInt32LE(stringMap[strings[stringId]], 8 + index * 8 + 4);
+    ids.forEach((id, index) => {
+      buffer.writeUInt32LE(+id, 8 + index * 8);
+      buffer.writeUInt32LE(dictionary[strings[id]], 8 + index * 8 + 4);
     });
     return buffer;
   }

@@ -18,10 +18,10 @@ export default class FileSink implements DataSink {
    * @param path Target file path.
    */
   constructor(path: string) {
-    this.fileDesc = fs.openSync(path, 'w');
+    this.fileDesc = fs.openSync(path, "w");
     this.fileSize = 0;
   }
-  
+
   write(buffer: Buffer): void {
     this.fileSize += buffer.length;
     fs.writeSync(this.fileDesc, buffer);
@@ -30,7 +30,7 @@ export default class FileSink implements DataSink {
   close(): void {
     fs.closeSync(this.fileDesc);
   }
-  
+
   size(): number {
     return this.fileSize;
   }

@@ -13,7 +13,7 @@ describe("BufferSource", () => {
     try {
       source.read(1);
       fail("EOF expected.");
-    } catch (e) {}
+    } catch (e) { /* expected */}
     source.close();
   });
 

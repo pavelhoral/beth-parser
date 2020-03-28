@@ -22,6 +22,7 @@ export default class WindowSource implements DataSource {
   }
 
   close(): void {
+    // nothing to close
   }
 
   cursor(): number {

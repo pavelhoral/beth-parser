@@ -1,14 +1,7 @@
 /**
- * Strings parsing handler.
+ * Handle single string record.
  */
-export interface StringsHandler {
-
-  /**
-   * Handle single string record.
-   */
-  (id: number, text: string): void;
-
-}
+export type StringsHandler = (id: number, text: string) => void;
 
 /**
  * Strings data parser.
@@ -50,7 +43,7 @@ export default class StringsParser {
       if (this.padded) {
           end += this.buffer.readUInt32LE(offset) - 1;
       } else {
-          while (this.buffer[end] != 0 || end >= this.buffer.length) {
+          while (this.buffer[end] !== 0 || end >= this.buffer.length) {
               end++;
           }
       }

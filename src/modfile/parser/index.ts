@@ -2,11 +2,11 @@
  * Streaming modfile parser module.
  * @packageDocumentation
  */
-export { 
+export {
   default as ModfileParser,
   ChildHandler,
   FieldHandler,
-  ParseChildren, 
-  ParseFields 
+  ParseChildren,
+  ParseFields
 } from "./ModfileParser";
 export {  default as  ModfileHandler } from "./ModfileHandler";

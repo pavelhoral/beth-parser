@@ -1,0 +1,9 @@
+{
+  "extends": ["tslint:recommended"],
+  "rules": {
+    "no-shadowed-variable": false,
+    "no-bitwise": false,
+    "quotemark": "double",
+    "eofline": true
+  }
+}
