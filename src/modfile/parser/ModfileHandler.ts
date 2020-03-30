@@ -1,52 +1,42 @@
-import { renderFormId, decodeTypeTag, defineTypeTags } from "../../utils";
 import { ChildHandler, ParseChildren, ParseFields } from "./ModfileParser";
 import { GroupType } from "../ModfileDefs";
+import { GroupEntry, RecordEntry, FieldEntry } from "../entry";
+import { ChildEntry } from "../entry/GroupEntry";
 
 /**
- * Basic ASCII types.
- */
-const ASCII_TYPES = Object.values(defineTypeTags("EDID"));
-
-/**
- * Default child handler implementation.
+ * Default collecting child handler implementation.
  */
 export default class ModfileHandler implements ChildHandler {
 
   /**
-   * Modfile root array.
+   * Modfile root entry.
    */
-  root = [] as any[];
+  root: GroupEntry = new GroupEntry(GroupType.ROOT, 0);
 
   /**
-   * Childern array stack.
+   * Children array stack.
    */
-  private stack = [this.root] as any[];
+  private stack: ChildEntry[][] = [this.root.children];
 
   handleGroup(type: number, _size: number, label: number, parse: ParseChildren): void {
-    // Prepare children array
-    const children: any[] = [];
+    // Create group entry
+    const group = new GroupEntry(type, label);
     // Register in parent
-    const head = this.stack[this.stack.length - 1];
-    head.push({ [`GRUP[${type === GroupType.TOP ? decodeTypeTag(label) : renderFormId(label)}]`]: children });
+    this.stack[this.stack.length - 1].push(group);
     // Parse children
-    this.stack.push(children);
+    this.stack.push(group.children);
     parse(this);
     this.stack.pop();
   }
 
   handleRecord(type: number, size: number, flags: number, formId: number, parse: ParseFields): void {
     // Prepare children array
-    const children: any[] = [];
+    const record = new RecordEntry(type, flags, formId);
     // Register in parent
-    const head = this.stack[this.stack.length - 1];
-    head.push({ [`${decodeTypeTag(type)}[${renderFormId(formId)}]`]: children });
+    this.stack[this.stack.length - 1].push(record);
     // Parse fields
     parse((type: number, size: number, buffer: Buffer, offset: number) => {
-      if (ASCII_TYPES.indexOf(type) > -1) {
-        children.push({ [decodeTypeTag(type)]:  buffer.toString("ascii", offset, offset + size - 1) });
-      } else {
-        children.push({ [decodeTypeTag(type)]: Buffer.from(buffer.subarray(offset, offset + size)) });
-      }
+      record.fields.push(new FieldEntry(type, Buffer.from(buffer.subarray(offset, offset + size))));
     });
   }
 

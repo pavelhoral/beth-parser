@@ -4,6 +4,7 @@
     "no-shadowed-variable": false,
     "no-bitwise": false,
     "quotemark": "double",
-    "eofline": true
+    "eofline": true,
+    "max-classes-per-file": false
   }
 }

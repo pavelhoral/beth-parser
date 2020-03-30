@@ -39,6 +39,8 @@ function renderValue(subject: any, prefix: string, indent: string, context = Ren
     return prefix + "[" + subject.toString("hex") + "]";
   } else if (Array.isArray(subject)) {
     return renderArray(subject, prefix, indent, context);
+  } else if (subject.toJSON) {
+    return renderValue(subject.toJSON(), prefix, indent, context);
   } else if (typeof subject === "object") {
     return renderObject(subject, prefix, context === RenderContext.OBJECT ? indent + "  " : indent, context);
   } else {

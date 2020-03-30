@@ -4,7 +4,7 @@ import * as fs from "fs";
 import StringsSerializer from "./StringsSerializer";
 
 /**
- * Strings file writer.
+ * Strings file writer (high-level API for serializer).
  */
 export default class StringsWriter {
 

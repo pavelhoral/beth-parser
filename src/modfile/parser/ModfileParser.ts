@@ -3,7 +3,6 @@ import * as zlib from "zlib";
 import { RecordFlag } from "../ModfileDefs";
 import { DataSource } from "../../source";
 import { defineTypeTags } from "../../utils";
-import { type } from "os";
 
 /**
  * Handle group based modfile entry.

@@ -3,12 +3,15 @@ import * as path from "path";
 
 import StringsParser from "./StringsParser";
 
+
+export type Dictionary = { [id: number]: string };
+
 /**
- * Node.js based strings file reader.
+ * Node.js based strings file reader (high-level API for parser).
  */
 export default class StringsReader {
 
-  private strings: { [id: number]: string } = {};
+  private strings: Dictionary = {};
 
   /**
    * Read strings from the given data buffer.
@@ -16,7 +19,7 @@ export default class StringsReader {
    * @param padded Whether strings are stored with size padding.
    * @param encoding String encoding.
    */
-  readBuffer(buffer: Buffer, padded = false, encoding = "utf-8") {
+  readBuffer(buffer: Buffer, padded = false, encoding = "utf-8"): Dictionary {
     const stringsParser = new StringsParser(buffer, padded, encoding);
     stringsParser.parse((id, text) => this.strings[id] = text);
     return this.strings;
@@ -27,7 +30,7 @@ export default class StringsReader {
    * @param filename File system path to a strings file.
    * @param encoding String encoding.
    */
-  readFile(filename: string, encoding = "utf-8") {
+  readFile(filename: string, encoding = "utf-8"): Dictionary {
     const buffer = fs.readFileSync(filename);
     const padded = path.extname(filename).toUpperCase() !== ".STRINGS";
     return this.readBuffer(buffer, padded, encoding);
@@ -39,7 +42,7 @@ export default class StringsReader {
    * @param language Strings file language code.
    * @param encoding String encoding.
    */
-  readByModfile(filename: string, language: string, encoding = "utf-8") {
+  readByModfile(filename: string, language: string, encoding = "utf-8"): Dictionary {
     const basename = path.basename(filename).replace(/\.[^\.]+$/, "") + "_" + language;
     const dirname = path.join(path.dirname(filename), "Strings");
     [".STRINGS", ".DLSTRINGS", ".ILSTRINGS"].forEach((extension) => {
