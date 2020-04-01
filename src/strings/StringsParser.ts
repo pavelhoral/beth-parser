@@ -23,7 +23,7 @@ export default class StringsParser {
    * Parse strings data using the given handler.
    * @param handler Strings handler.
    */
-  parse(handler: StringsHandler) {
+  parse(handler: StringsHandler): void {
     const count = this.buffer.readUInt32LE(0);
     const start = (count + 1) * 8; // Data starts after dictionary
     for (let i = 8; i < start; i += 8) {

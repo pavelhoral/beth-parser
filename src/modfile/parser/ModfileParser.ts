@@ -79,7 +79,7 @@ export default class ModfileParser {
    * Start modfile parsing with the given handler.
    * @param handler Top-level modfile handler.
    */
-  parse(handler: ChildHandler) {
+  parse(handler: ChildHandler): void {
     while (this.parseNext(handler)) { /* no-op */ }
   }
 

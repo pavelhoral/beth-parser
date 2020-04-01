@@ -9,8 +9,8 @@
     "build": "tsc",
     "test": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
     "cover": "nyc npm test",
-    "format": "tslint -p tsconfig.json --fix",
-    "lint": "tslint -p tsconfig.json",
+    "format": "eslint -c .eslintrc.json --fix --ext .ts src",
+    "lint": "eslint -c .eslintrc.json --ext .ts src",
     "prepare": "npm run clean && npm run build",
     "preversion": "npm test && npm run lint",
     "postversion": "git push && git push --tags"
@@ -39,12 +39,14 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/jasmine": "^3.5.10",
     "@types/node": "^12.12.31",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
+    "eslint": "^6.8.0",
     "jasmine": "^3.5.0",
     "nyc": "^15.0.0",
     "rimraf": "^3.0.2",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.8.1",
-    "tslint": "^6.1.0",
     "typescript": "^3.8.3"
   },
   "dependencies": {

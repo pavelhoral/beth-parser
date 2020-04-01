@@ -16,10 +16,10 @@ export default class StringsSerializer {
   /**
    * Serialize strings into data buffer.
    */
-  serialize(strings: { [id: number]: string }) {
+  serialize(strings: { [id: number]: string }): Buffer {
     const ids = Object.keys(strings).map(Number);
     const directorySize = ids.length * 8;
-    let dataSize: number = 0;
+    let dataSize = 0;
     // Create string to buffer dictionary
     const dictionary = ids.reduce((result: any, stringId: number) => {
       const text: string = strings[stringId];

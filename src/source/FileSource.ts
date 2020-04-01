@@ -47,7 +47,7 @@ export default class FileSource implements DataSource {
   /**
    * Read another portion of the file into the target buffer.
    */
-  private readFile(buffer: Buffer) {
+  private readFile(buffer: Buffer): Buffer {
     const reminderLength = this.bufferLength - this.bufferOffset;
     // Copy buffer reminder to the beginning of the target buffer
     this.sourceBuffer.copy(buffer, 0, this.bufferOffset, this.bufferLength);
@@ -63,7 +63,7 @@ export default class FileSource implements DataSource {
   /**
    * Read data using the internal source buffer.
    */
-  private readBuffer(length: number) {
+  private readBuffer(length: number): Buffer {
     if (this.bufferOffset + length > this.bufferLength) {
       this.bufferLength = this.readFile(this.sourceBuffer).length;
     }
@@ -74,7 +74,7 @@ export default class FileSource implements DataSource {
     return this.sourceBuffer.subarray(this.bufferOffset - length, this.bufferOffset);
   }
 
-  read(length: number) {
+  read(length: number): Buffer {
     if (length > this.sourceBuffer.length) {
       return this.readFile(Buffer.alloc(length));
     } else {
@@ -82,7 +82,7 @@ export default class FileSource implements DataSource {
     }
   }
 
-  skip(length: number) {
+  skip(length: number): void {
     this.bufferOffset += length;
     if (this.bufferOffset > this.bufferLength) {
       this.filePosition += this.bufferOffset - this.bufferLength;
@@ -91,11 +91,11 @@ export default class FileSource implements DataSource {
     }
   }
 
-  close() {
+  close(): void {
     fs.closeSync(this.fileDesc);
   }
 
-  cursor() {
+  cursor(): number {
     return this.filePosition - this.bufferLength + this.bufferOffset;
   }
 
