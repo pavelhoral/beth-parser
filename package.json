@@ -1,6 +1,6 @@
 {
   "name": "beth-parser",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Parser library for Bethesda's Creation Engine data files",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
