@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,
     "outDir": "dist",
     "lib": ["es2019"],
     "types": ["node"],

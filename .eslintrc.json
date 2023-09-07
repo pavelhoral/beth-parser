@@ -8,10 +8,7 @@
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": [
-      "tsconfig.main.json",
-      "tsconfig.test.json"
-    ],
+    "project": "tsconfig.build.json",
     "sourceType": "module"
   },
   "plugins": [

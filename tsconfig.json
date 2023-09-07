@@ -1,11 +1,11 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.main.json"
-    },
-    {
-      "path": "./tsconfig.test.json"
-    }
+  "compilerOptions": {
+    "noEmit": true,
+    "lib": ["es2019"],
+    "types": ["node"],
+  },
+  "include": [
+    "test/**/*.ts",
+    "src/**/*.ts"
   ]
 }
