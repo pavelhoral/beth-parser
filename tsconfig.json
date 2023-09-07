@@ -1,13 +1,10 @@
 {
-  "compilerOptions": {
-    "outDir": "dist",
-    "lib": ["es2019"],
-    "types": ["node"],
-    "sourceMap": true,
-    "declaration": true,
-    "strict": true
-  },
-  "include": [
-    "src/**/*.ts"
+  "references": [
+    {
+      "path": "./tsconfig.main.json"
+    },
+    {
+      "path": "./tsconfig.test.json"
+    }
   ]
 }
