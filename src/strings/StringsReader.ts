@@ -1,7 +1,7 @@
-import * as fs from "fs";
-import * as path from "path";
 
+import { readFileSync } from "fs";
 import StringsParser from "./StringsParser";
+import { basename, dirname, extname, join } from "path";
 
 
 export type Dictionary = { [id: number]: string };
@@ -31,8 +31,8 @@ export default class StringsReader {
    * @param encoding String encoding.
    */
   readFile(filename: string, encoding = "utf-8"): Dictionary {
-    const buffer = fs.readFileSync(filename);
-    const padded = path.extname(filename).toUpperCase() !== ".STRINGS";
+    const buffer = readFileSync(filename);
+    const padded = extname(filename).toUpperCase() !== ".STRINGS";
     return this.readBuffer(buffer, padded, encoding);
   }
 
@@ -43,10 +43,10 @@ export default class StringsReader {
    * @param encoding String encoding.
    */
   readByModfile(filename: string, language: string, encoding = "utf-8"): Dictionary {
-    const basename = path.basename(filename).replace(/\.[^\.]+$/, "") + "_" + language;
-    const dirname = path.join(path.dirname(filename), "Strings");
+    const name = basename(filename).replace(/\.[^\.]+$/, "") + "_" + language;
+    const path = join(dirname(filename), "Strings");
     [".STRINGS", ".DLSTRINGS", ".ILSTRINGS"].forEach((extension) => {
-      this.readFile(path.join(dirname, basename + extension), encoding);
+      this.readFile(join(path, name + extension), encoding);
     });
     return this.strings;
   }

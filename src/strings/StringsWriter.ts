@@ -1,7 +1,7 @@
-import * as path from "path";
-import * as fs from "fs";
 
+import { extname } from "path";
 import StringsSerializer from "./StringsSerializer";
+import { writeFileSync } from "fs";
 
 /**
  * Strings file writer (high-level API for serializer).
@@ -27,8 +27,8 @@ export default class StringsWriter {
    * @param filename Target file.
    */
   writeFile(strings: { [id: number]: string }, filename: string): void {
-    const outputBuffer = this.writeBuffer(strings, path.extname(filename) !== ".STRINGS");
-    fs.writeFileSync(filename, outputBuffer);
+    const outputBuffer = this.writeBuffer(strings, extname(filename) !== ".STRINGS");
+    writeFileSync(filename, outputBuffer);
   }
 
 }

@@ -1,3 +1,5 @@
+import { encode } from "iconv-lite";
+
 /**
  * Strings data serializer.
  */
@@ -24,7 +26,7 @@ export default class StringsSerializer {
     const dictionary = ids.reduce((result: any, stringId: number) => {
       const text: string = strings[stringId];
       if (!result[text]) {
-        result[text] = Buffer.from(text, this.encoding as BufferEncoding);
+        result[text] = encode(text, this.encoding);
         dataSize += +this.padded * 8 + result[text].length + 1;
       }
       return result;

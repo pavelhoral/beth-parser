@@ -1,3 +1,5 @@
+import { decode } from "iconv-lite";
+
 /**
  * Handle single string record.
  */
@@ -47,7 +49,7 @@ export default class StringsParser {
               end++;
           }
       }
-      return this.buffer.toString(this.encoding, start, end);
+      return decode(this.buffer.slice(start, end), this.encoding);
   }
 
 }
